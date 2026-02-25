@@ -202,7 +202,7 @@ export default function Home() {
   return (
     <main className="relative bg-slate-950 font-sans text-slate-200 overflow-x-hidden">
       {/* Fixed Dynamic Background Elements */}
-      <div className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80')] bg-cover bg-center bg-no-repeat opacity-[0.15] z-0"></div>
+      <div className={`fixed inset-0 bg-cover bg-center bg-no-repeat opacity-[0.15] z-0 transition-all duration-1000 ${predictorMode === 'house' ? "bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80')]" : "bg-[url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80')]"}`}></div>
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vh] bg-emerald-500/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none z-0"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vh] bg-cyan-500/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none z-0"></div>
       <div className="fixed inset-0 backdrop-blur-[2px] z-0 pointer-events-none"></div>
@@ -739,13 +739,13 @@ export default function Home() {
                           <h4 className="text-slate-300 text-[11px] font-semibold tracking-[0.15em] uppercase mb-4 text-left border-b border-white/5 pb-2">Vision Board (Commercial)</h4>
                           <div className="grid grid-cols-2 gap-3 md:gap-4">
                             <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 group/img shadow-2xl">
-                              <img src="https://images.unsplash.com/photo-1576483562624-9dfc8230ebae?auto=format&fit=crop&w=800&q=80" alt="Shop Front" className="object-cover w-full h-full group-hover/img:scale-110 transition-transform duration-700 ease-out" />
+                              <img src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=800&q=80" alt="Shop Front" className="object-cover w-full h-full group-hover/img:scale-110 transition-transform duration-700 ease-out" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-3">
                                 <span className="text-[10px] text-white font-bold uppercase tracking-widest">Storefront</span>
                               </div>
                             </div>
                             <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 group/img shadow-2xl">
-                              <img src="https://images.unsplash.com/photo-1604014237800-1c9102c219da?auto=format&fit=crop&w=800&q=80" alt="Shop Interior" className="object-cover w-full h-full group-hover/img:scale-110 transition-transform duration-700 ease-out" />
+                              <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=800&q=80" alt="Shop Interior" className="object-cover w-full h-full group-hover/img:scale-110 transition-transform duration-700 ease-out" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end p-3">
                                 <span className="text-[10px] text-white font-bold uppercase tracking-widest">Interior</span>
                               </div>
