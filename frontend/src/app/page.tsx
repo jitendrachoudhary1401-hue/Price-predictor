@@ -99,6 +99,7 @@ export default function Home() {
   const [error, setError] = useState('');
   const [activeThought, setActiveThought] = useState(0);
   const [showPredictor, setShowPredictor] = useState(false);
+  const [smallThoughtIndex, setSmallThoughtIndex] = useState(0);
 
   // Simple scroll spy effect for thoughts
   useEffect(() => {
@@ -118,6 +119,16 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showPredictor) {
+      interval = setInterval(() => {
+        setSmallThoughtIndex(prev => (prev + 1) % THOUGHTS.length);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [showPredictor]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -196,65 +207,93 @@ export default function Home() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vh] bg-cyan-500/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none z-0"></div>
       <div className="fixed inset-0 backdrop-blur-[2px] z-0 pointer-events-none"></div>
 
-      <div className="relative z-10 w-full max-w-screen-2xl mx-auto flex flex-col min-h-screen">
+      <div className="relative z-10 w-full max-w-screen-2xl mx-auto flex flex-col lg:flex-row min-h-screen">
 
         {/* Scrollytelling Narrative */}
-        <div className={`w-full relative py-20 px-4 sm:px-12 transition-all duration-1000 ${showPredictor ? 'lg:w-5/12 hidden lg:block' : 'max-w-4xl mx-auto'}`}>
-          {THOUGHTS.map((thought, index) => (
-            <div
-              key={index}
-              className={`h-screen flex flex-col justify-center transition-all duration-1000 ease-in-out ${activeThought === index
-                ? 'opacity-100 translate-y-0 scale-100 filter-none'
-                : 'opacity-10 translate-y-12 scale-95 blur-[2px]'
-                }`}
-            >
-              <div className="relative">
-                <span className="absolute -left-8 -top-8 text-7xl text-emerald-500/20 font-serif leading-none">"</span>
-                <h2 className={`font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-400 drop-shadow-sm pb-4 leading-tight relative z-10 ${showPredictor ? 'text-4xl xl:text-5xl' : 'text-5xl md:text-6xl xl:text-7xl'}`}>
-                  {thought.quote}
-                </h2>
-                <div className="h-1 w-20 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full mb-6"></div>
-                <p className={`text-emerald-400 font-medium tracking-wide ${showPredictor ? 'text-xl' : 'text-2xl'}`}>— {thought.author}</p>
-                <p className={`mt-6 text-slate-400 font-light leading-relaxed max-w-2xl ${showPredictor ? 'text-lg' : 'text-xl md:text-2xl'}`}>
-                  {thought.subtext}
-                </p>
+        <div className={`w-full relative py-20 px-4 sm:px-12 transition-all duration-1000 ${showPredictor ? 'lg:w-5/12 hidden lg:flex flex-col justify-start pt-32 min-h-screen lg:sticky lg:top-0' : 'max-w-4xl mx-auto'}`}>
+          {!showPredictor ? (
+            <>
+              {THOUGHTS.map((thought, index) => (
+                <div
+                  key={index}
+                  className={`h-screen flex flex-col justify-center transition-all duration-1000 ease-in-out ${activeThought === index
+                    ? 'opacity-100 translate-y-0 scale-100 filter-none'
+                    : 'opacity-10 translate-y-12 scale-95 blur-[2px]'
+                    }`}
+                >
+                  <div className="relative">
+                    <span className="absolute -left-8 -top-8 text-7xl text-emerald-500/20 font-serif leading-none">"</span>
+                    <h2 className="font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-400 drop-shadow-sm pb-4 leading-tight relative z-10 text-5xl md:text-6xl xl:text-7xl">
+                      {thought.quote}
+                    </h2>
+                    <div className="h-1 w-20 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full mb-6"></div>
+                    <p className="text-emerald-400 font-medium tracking-wide text-2xl">— {thought.author}</p>
+                    <p className="mt-6 text-slate-400 font-light leading-relaxed max-w-2xl text-xl md:text-2xl">
+                      {thought.subtext}
+                    </p>
 
-                {/* Predict Button on Last Thought */}
-                {!showPredictor && index === THOUGHTS.length - 1 && (
-                  <div className="mt-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-                    <button
-                      onClick={() => {
-                        setShowPredictor(true);
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}
-                      className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-emerald-500 font-pj rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 hover:bg-emerald-600 hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/30 active:translate-y-0"
-                    >
-                      <Calculator className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
-                      Start Your Prediction
-                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 rounded-xl"></div>
-                    </button>
+                    {/* Predict Button on Last Thought */}
+                    {index === THOUGHTS.length - 1 && (
+                      <div className="mt-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
+                        <button
+                          onClick={() => {
+                            setShowPredictor(true);
+                            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                          }}
+                          className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-emerald-500 font-pj rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 hover:bg-emerald-600 hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/30 active:translate-y-0"
+                        >
+                          <Calculator className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+                          Start Your Prediction
+                          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 rounded-xl"></div>
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+              ))}
+              {/* Subtle scroll indicator */}
+              {activeThought < THOUGHTS.length - 1 && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce text-emerald-500/50">
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Scroll</span>
+                  <div className="w-px h-8 bg-gradient-to-b from-emerald-500/50 to-transparent"></div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-left-8 duration-1000 hidden lg:block">
+              <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-500 to-cyan-500"></div>
+                <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-[40px] pointer-events-none"></div>
+                <span className="absolute left-6 -top-4 text-9xl text-emerald-500/10 font-serif leading-none select-none border-none">"</span>
+
+                <div className="relative z-10 min-h-[220px] flex flex-col justify-center transition-all duration-500" key={smallThoughtIndex}>
+                  <h3 className="font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-400 drop-shadow-sm pb-4 leading-tight text-2xl lg:text-3xl xl:text-4xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    {THOUGHTS[smallThoughtIndex].quote}
+                  </h3>
+                  <div className="h-1 w-16 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full mb-4 animate-in fade-in duration-700"></div>
+                  <p className="text-emerald-400 font-medium tracking-wide text-sm md:text-base lg:text-lg animate-in fade-in duration-700 delay-100">— {THOUGHTS[smallThoughtIndex].author}</p>
+                  <p className="mt-4 text-slate-400 font-light leading-relaxed text-sm lg:text-base animate-in fade-in duration-700 delay-200">
+                    {THOUGHTS[smallThoughtIndex].subtext}
+                  </p>
+                </div>
+
+                <div className="flex gap-2 mt-10 justify-start items-center relative z-10">
+                  {THOUGHTS.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSmallThoughtIndex(idx)}
+                      className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${idx === smallThoughtIndex ? 'w-8 bg-emerald-500' : 'w-2 bg-slate-700 hover:bg-slate-500'}`}
+                      aria-label={`Go to thought ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-          {/* Subtle scroll indicator */}
-          {!showPredictor && activeThought < THOUGHTS.length - 1 && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce text-emerald-500/50">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Scroll</span>
-              <div className="w-px h-8 bg-gradient-to-b from-emerald-500/50 to-transparent"></div>
-            </div>
-          )}
-          {showPredictor && (
-            <div className="fixed bottom-10 left-12 hidden lg:flex flex-col items-center animate-bounce text-emerald-500/50">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Scroll</span>
-              <div className="w-px h-8 bg-gradient-to-b from-emerald-500/50 to-transparent"></div>
             </div>
           )}
         </div>
 
-        {/* Right Side: Sticky Predictor Form */}
-        <div className={`w-full py-12 px-4 sm:px-6 lg:px-12 xl:px-20 min-h-screen flex items-center lg:sticky lg:top-0 transition-all duration-1000 min-w-0 ${showPredictor ? 'lg:w-7/12 opacity-100 translate-x-0' : 'hidden opacity-0 translate-x-[100%]'}`}>
+        {/* Right Side: Predictor Form */}
+        <div className={`w-full py-12 px-4 sm:px-6 lg:px-12 xl:px-20 min-h-screen flex items-center transition-all duration-1000 min-w-0 ${showPredictor ? 'lg:w-7/12 opacity-100 translate-x-0' : 'hidden opacity-0 translate-x-[100%]'}`}>
           <div className="w-full max-w-3xl mx-auto space-y-10">
             <div className="text-center lg:text-left animate-in fade-in slide-in-from-top-10 duration-1000">
               <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-semibold tracking-wider backdrop-blur-md shadow-[0_0_15px_rgba(52,211,153,0.15)] uppercase">
